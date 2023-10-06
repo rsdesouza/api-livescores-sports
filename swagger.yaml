@@ -1,0 +1,125 @@
+openapi: 3.0.0
+info:
+  title: API de Eventos
+  version: 1.0.0
+paths:
+  /events:
+    post:
+      summary: Cria um novo evento
+      description: >
+        Cria um novo evento com os detalhes fornecidos.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Event'
+      responses:
+        '201':
+          description: Evento criado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Event'
+  /events/live:
+    get:
+      summary: Obtém eventos ao vivo
+      description: Obtém uma lista de eventos que estão atualmente ao vivo.
+      responses:
+        '200':
+          description: Lista de eventos ao vivo obtida com sucesso
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Event'
+  /events/byEventDate/{eventDate}:
+    get:
+      summary: Obtém eventos por data de início
+      description: >
+        Obtém uma lista de eventos com base na data de início fornecida.
+        Parâmetro `eventDate` deve estar no formato DD-MM-YYYY.
+      parameters:
+        - in: path
+          name: eventDate
+          description: Data de início para filtrar os eventos (formato: DD-MM-YYYY)
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Lista de eventos obtida com sucesso
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Event'
+
+  /events/finished/byDate/{eventDate}:
+    get:
+      summary: Obtém eventos finalizados por data
+      description: >
+        Obtém uma lista de eventos finalizados com base na data fornecida.
+        Parâmetro `date` deve estar no formato DD-MM-YYYY.
+      parameters:
+        - in: path
+          name: eventDate
+          description: Data para filtrar os eventos finalizados (formato: DD-MM-YYYY)
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Lista de eventos finalizados obtida com sucesso
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Event'
+components:
+  schemas:
+    Event:
+      type: object
+      properties:
+        participants:
+          type: array
+          items:
+            $ref: '#/components/schemas/Participant'
+        competition:
+          type: object
+          properties:
+            participants:
+              type: array
+              items:
+                $ref: '#/components/schemas/Participant'
+        startTime:
+          type: string
+          description: Hora de início no formato HH:MM
+        eventDate:
+          type: string
+          description: Data de início no formato DD-MM-YYYY
+        status:
+          type: string
+          enum:
+            - ao_vivo
+            - a_iniciar
+            - finalizado
+
+    Participant:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Nome do participante
+        imageLink:
+          type: string
+          description: Link da imagem do participante
+    Competition:
+      type: object
+      properties:
+        participants:
+          type: array
+          items:
+            $ref: '#/components/schemas/Participant'

@@ -1,0 +1,37 @@
+version: '3.7'
+
+networks:
+  net-livescores:
+    driver: bridge
+
+services:
+  mongodb:
+    image: mongo
+    restart: always
+    container_name: mongodb
+    command: [--auth]
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+      MONGO_INITDB_DATABASE: events_db
+      MONGO_USERNAME: admin
+      MONGO_PASSWORD: qwe123
+    ports:
+      - "27018:27017"
+    volumes:
+      - ./data/mongo:/data/db
+      - ./mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh
+    networks:
+      - net-livescores
+
+  nodejs:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nodejs
+    depends_on:
+      - mongodb
+    ports:
+      - "8080:8080"
+    networks:
+      - net-livescores
